@@ -1,12 +1,11 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:fpdart/src/task_either.dart';
 import 'package:location/location.dart' as API;
 import 'package:location_logger/features/location/adapter/model/mapper/location_data_to_location.dart';
 import 'package:location_logger/features/location/application/port/location_gathering_port.dart';
 import 'package:location_logger/features/location/application/port/model/exception/location_gathering_exception.dart';
 import 'package:location_logger/features/location/domain/location.dart';
 
-class LocationGatheringAdapter extends LocationGatheringPort {
+class LocationGatheringAdapter implements LocationGatheringPort {
   final API.Location locationClient;
 
   LocationGatheringAdapter(this.locationClient);
