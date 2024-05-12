@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:location/location.dart';
-import 'package:location_logger/features/location/application/port/model/error/location_persistence_error.dart';
+import 'package:location_logger/features/location/application/port/model/exception/location_persistence_exception.dart';
+import 'package:location_logger/features/location/domain/location.dart';
 
 abstract class LocationPersistencePort {
-  TaskEither<LocationPersistenceError, void> persist(Location location);
+  TaskEither<LocationPersistenceException, void> persist(Location location);
 }

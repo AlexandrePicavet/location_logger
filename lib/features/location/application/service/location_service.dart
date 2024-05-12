@@ -6,8 +6,8 @@ import 'package:location_logger/features/location/application/usecase/list_locat
 import 'package:location_logger/features/location/application/usecase/register_location_usecase.dart';
 import 'package:location_logger/features/location/domain/date_time_paginated_list.dart';
 import 'package:location_logger/features/location/domain/date_time_pagination.dart';
-import 'package:location_logger/features/location/domain/error/list_location_error.dart';
-import 'package:location_logger/features/location/domain/error/location_update_error.dart';
+import 'package:location_logger/features/location/domain/exception/list_location_exception.dart';
+import 'package:location_logger/features/location/domain/exception/location_update_exception.dart';
 import 'package:location_logger/features/location/domain/location.dart';
 
 class LocationService
@@ -23,16 +23,22 @@ class LocationService
   });
 
   @override
-  TaskEither<LocationUpdateError, void> register() {
+  TaskEither<LocationUpdateException, void> register() {
     return locationGatheringPort()
-        .map(locationPersistencePort.persist)
-        .mapLeft(LocationUpdateError.new);
+        .mapLeft(LocationUpdateException.new)
+        .flatMap<void>(
+          (location) => locationPersistencePort
+              .persist(location)
+              .mapLeft(LocationUpdateException.new),
+        );
   }
 
   @override
-  TaskEither<ListLocationError, DateTimePaginatedList<Location>> list(
+  TaskEither<ListLocationException, DateTimePaginatedList<Location>> list(
     DateTimePagination pagination,
   ) {
-    return locationsListPort.list(pagination).mapLeft(ListLocationError.new);
+    return locationsListPort
+        .list(pagination)
+        .mapLeft(ListLocationException.new);
   }
 }

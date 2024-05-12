@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:location/location.dart';
-import 'package:location_logger/features/location/application/port/model/error/location_gathering_error.dart';
+import 'package:location_logger/features/location/application/port/model/exception/location_gathering_exception.dart';
+import 'package:location_logger/features/location/domain/location.dart';
 
 abstract class LocationGatheringPort {
-  TaskEither<LocationGatheringError, Location> call();
+  TaskEither<LocationGatheringException, Location> call();
 }

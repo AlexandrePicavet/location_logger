@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:location_logger/features/location/domain/error/location_update_error.dart';
+import 'package:location_logger/features/location/domain/exception/location_update_exception.dart';
 
 abstract class RegisterCurrentLocationUsecase {
-  TaskEither<LocationUpdateError, void> register();
+  TaskEither<LocationUpdateException, void> register();
 }
