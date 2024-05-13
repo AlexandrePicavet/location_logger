@@ -1,4 +1,4 @@
-package com.example.location_logger
+package dev.picavet.location_logger
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -12,13 +12,13 @@ extension DateTimePaginationToSQL on DateTimePagination {
     String sql = "";
 
     if (start != null) {
-      sql += "WHERE $timestampColumnName >= $start";
+      sql += "WHERE $timestampColumnName >= ${start!.millisecondsSinceEpoch}";
 
       if (end != null) {
-        sql += " AND $timestampColumnName < $end";
+        sql += " AND $timestampColumnName < ${end!.millisecondsSinceEpoch}";
       }
     } else if (end != null) {
-      sql += "WHERE $timestampColumnName < $end";
+      sql += "WHERE $timestampColumnName < ${end!.millisecondsSinceEpoch}";
     }
 
     return sql;

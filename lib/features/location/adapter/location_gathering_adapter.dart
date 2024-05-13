@@ -1,19 +1,20 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:location/location.dart' as API;
 import 'package:location_logger/features/location/adapter/model/mapper/location_data_to_location.dart';
 import 'package:location_logger/features/location/application/port/location_gathering_port.dart';
 import 'package:location_logger/features/location/application/port/model/exception/location_gathering_exception.dart';
 import 'package:location_logger/features/location/domain/location.dart';
+import 'package:location_logger/infrastructure/location_client.dart';
 
 class LocationGatheringAdapter implements LocationGatheringPort {
-  final API.Location locationClient;
+  final LocationClient locationClient;
 
   LocationGatheringAdapter(this.locationClient);
 
   @override
   TaskEither<LocationGatheringException, Location> call() {
-    return configureService(locationClient)
-        .andThen(() => getLocation(locationClient))
+    return locationClient
+        .getLocation()
+        .mapLeft(LocationGatheringException.new)
         .chainEither(
           (locationData) => locationData.toLocation().toEither(
                 () => LocationGatheringException(
@@ -21,50 +22,5 @@ class LocationGatheringAdapter implements LocationGatheringPort {
                 ),
               ),
         );
-  }
-
-  static TaskEither<LocationGatheringException, API.LocationData> getLocation(
-    API.Location locationClient,
-  ) {
-    return TaskEither.tryCatch(
-      () => locationClient.getLocation(),
-      (error, stacktrace) => LocationGatheringException(error),
-    );
-  }
-
-  static TaskEither<LocationGatheringException, void> configureService(
-    API.Location locationClient,
-  ) {
-    return TaskEither.tryCatch(
-      () async {
-        await _enableService(locationClient);
-        await _requestPermission(locationClient);
-      },
-      (error, stackTrace) => LocationGatheringException(error),
-    );
-  }
-
-  static Future<void> _enableService(
-    API.Location locationClient,
-  ) async {
-    if (await locationClient.serviceEnabled()) {
-      await locationClient.requestService();
-    }
-  }
-
-  static Future<void> _requestPermission(
-    API.Location locationClient,
-  ) async {
-    while (!(await _hasPermission(locationClient))) {
-      await locationClient.requestPermission();
-    }
-  }
-
-  static Future<bool> _hasPermission(
-    API.Location locationClient,
-  ) async {
-    final permission = await locationClient.hasPermission();
-    return permission == API.PermissionStatus.granted ||
-        permission == API.PermissionStatus.grantedLimited;
   }
 }

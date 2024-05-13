@@ -2,7 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:location_logger/features/location/application/port/location_gathering_port.dart';
 import 'package:location_logger/features/location/application/port/location_persistence_port.dart';
 import 'package:location_logger/features/location/application/port/location_retrieval_port.dart';
-import 'package:location_logger/features/location/application/usecase/list_locations_usecase.dart';
+import 'package:location_logger/features/location/application/usecase/locations_list_usecase.dart';
 import 'package:location_logger/features/location/application/usecase/register_location_usecase.dart';
 import 'package:location_logger/features/location/domain/date_time_paginated_list.dart';
 import 'package:location_logger/features/location/domain/date_time_pagination.dart';
@@ -14,12 +14,12 @@ class LocationService
     implements RegisterCurrentLocationUsecase, LocationsListUsecase {
   final LocationGatheringPort locationGatheringPort;
   final LocationPersistencePort locationPersistencePort;
-  final LocationRetrievalPort locationsListPort;
+  final LocationRetrievalPort locationsRetrievalPort;
 
   LocationService({
     required this.locationGatheringPort,
     required this.locationPersistencePort,
-    required this.locationsListPort,
+    required this.locationsRetrievalPort,
   });
 
   @override
@@ -37,7 +37,7 @@ class LocationService
   TaskEither<ListLocationException, DateTimePaginatedList<Location>> list(
     DateTimePagination pagination,
   ) {
-    return locationsListPort
+    return locationsRetrievalPort
         .list(pagination)
         .mapLeft(ListLocationException.new);
   }

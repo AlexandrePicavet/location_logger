@@ -5,53 +5,40 @@ import 'package:location_logger/infrastructure/model/exception/database_query_ex
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseClient {
-  final Task<Database> _database;
+  final String name;
+  final int version;
 
-  DatabaseClient(String databaseName, int version)
-      : _database = _initializeDatabase(databaseName, version);
+  late final Database _database;
 
-  static Task<Database> _initializeDatabase(String databaseName, int version) {
-    return Task(
+  DatabaseClient({required this.name, required this.version});
+
+  TaskEither<DatabaseInitializationError, DatabaseClient> initialize({
+    OnDatabaseCreateFn? onCreate,
+    OnDatabaseOpenFn? onOpen,
+  }) {
+    return TaskEither.tryCatch(
       () async {
-        try {
-          return await openDatabase(
-            databaseName,
-            version: version,
-            onCreate: _createTables,
-          );
-        } catch (error) {
-          throw DatabaseInitializationError(error);
-        }
-      },
-    );
-  }
+        _database = await openDatabase(name,
+            version: version, onCreate: onCreate, onOpen: onOpen);
 
-  static Future<void> _createTables(Database database, int version) {
-    return database.execute('''
-      CREATE TABLE Location (
-        timestamp INTEGER NOT NULL PRIMARY KEY,
-        latitude TEXT NOT NULL,
-        longitude TEXT NOT NULL,
-        altitude TEXT NOT NULL,
-        speed TEXT
-      ) WITHOUT ROWID
-    ''');
+        return this;
+      },
+      (error, stackTrace) => DatabaseInitializationError(error),
+    );
   }
 
   TaskEither<DatabaseInsertException, void> insert(
     String query,
     List<Object?> arguments,
   ) {
-    return _database
-        .toTaskEither<DatabaseInsertException>()
-        .flatMap(
-          (database) => TaskEither.tryCatch(
-            () => database.rawInsert(query, arguments),
-            (error, stackTrace) => DatabaseInsertException(error),
-          ),
+    return TaskEither.tryCatch(
+      () => _database.rawInsert(query, arguments),
+      (error, stackTrace) => DatabaseInsertException(error),
+    )
+        .filterOrElse(
+          (result) => result > 0,
+          (result) => DatabaseInsertException("Failed insertion"),
         )
-        .filterOrElse((result) => result > 0,
-            (result) => DatabaseInsertException("Failed insertion"))
         .map<void>((_) => {});
   }
 
@@ -59,11 +46,9 @@ class DatabaseClient {
     String query,
     List<Object?> arguments,
   ) {
-    return _database.toTaskEither<DatabaseQueryException>().flatMap(
-          (database) => TaskEither.tryCatch(
-            () => database.rawQuery(query, arguments),
-            (error, stackTrace) => DatabaseQueryException(error),
-          ),
-        );
+    return TaskEither.tryCatch(
+      () => _database.rawQuery(query, arguments),
+      (error, stackTrace) => DatabaseQueryException(error),
+    );
   }
 }
