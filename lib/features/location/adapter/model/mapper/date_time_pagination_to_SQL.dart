@@ -1,42 +1,48 @@
 import 'package:location_logger/features/location/domain/date_time_pagination.dart';
 
 extension DateTimePaginationToSQL on DateTimePagination {
-  String toWhereOffsetLimit({String timestampColumnName = "timestamp"}) {
+  static const defaultTimestampColumnName = "timestamp";
+
+  String toWhereOrderByOffsetLimit({
+    String timestampColumnName = defaultTimestampColumnName,
+  }) {
     return [
       toWhereClause(timestampColumnName: timestampColumnName),
-      toOffsetLimit()
+      toOrderBy(),
+      toOffsetLimit(),
     ].join(" ");
   }
 
-  String toWhereClause({String timestampColumnName = "timestamp"}) {
-    String sql = "";
-
-    if (start != null) {
-      sql += "WHERE $timestampColumnName >= ${start!.millisecondsSinceEpoch}";
-
-      if (end != null) {
-        sql += " AND $timestampColumnName < ${end!.millisecondsSinceEpoch}";
-      }
-    } else if (end != null) {
-      sql += "WHERE $timestampColumnName < ${end!.millisecondsSinceEpoch}";
-    }
-
-    return sql;
+  String toWhereClause({
+    String timestampColumnName = defaultTimestampColumnName,
+  }) {
+    return switch (start) {
+      DateTime() =>
+        "WHERE $timestampColumnName >= ${start!.millisecondsSinceEpoch}${switch (end) {
+          DateTime() =>
+            " AND $timestampColumnName < ${end!.millisecondsSinceEpoch}",
+          null => "",
+        }}",
+      null => "WHERE $timestampColumnName < ${end!.millisecondsSinceEpoch}",
+    };
   }
 
   String toOffsetLimit() {
-    String sql = "";
+    return switch (offset) {
+      > 0 => "LIMIT $offset${switch (limit) {
+          int() => ", $limit",
+          null => "",
+        }}",
+      _ => switch (limit) {
+          int() => "LIMIT $limit",
+          null => "",
+        }
+    };
+  }
 
-    if (offset > 0) {
-      sql += "LIMIT $offset";
-
-      if (limit != null) {
-        sql += ", $limit";
-      }
-    } else if (limit != null) {
-      sql += "LIMIT $limit";
-    }
-
-    return sql;
+  String toOrderBy({
+    String timestampColumnName = defaultTimestampColumnName,
+  }) {
+    return "ORDER BY $timestampColumnName ${direction.name.toUpperCase()}";
   }
 }

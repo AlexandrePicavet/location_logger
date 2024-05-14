@@ -1,5 +1,5 @@
-class DatabaseQueryException implements Exception {
-  final Object cause;
+import 'package:location_logger/common/model/exception/location_logger_exception.dart';
 
-  DatabaseQueryException(this.cause);
+class DatabaseQueryException extends LocationLoggerException {
+  DatabaseQueryException(super.cause);
 }

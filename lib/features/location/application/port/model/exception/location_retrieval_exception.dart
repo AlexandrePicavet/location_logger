@@ -1,5 +1,5 @@
-class LocationRetrievalException implements Exception {
-  final Object cause;
+import 'package:location_logger/common/model/exception/location_logger_exception.dart';
 
-  LocationRetrievalException(this.cause);
+class LocationRetrievalException extends LocationLoggerException {
+  LocationRetrievalException(super.cause);
 }

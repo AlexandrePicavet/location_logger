@@ -1,10 +1,10 @@
-abstract class DomainException implements Exception {
+import 'package:location_logger/common/model/exception/location_logger_exception.dart';
+
+abstract class DomainException extends LocationLoggerException {
   abstract final List<Type> allowedExceptions;
 
-  final Exception cause;
-
-  DomainException(this.cause) {
-    _checkCauseType(cause.runtimeType);
+  DomainException(super.cause) {
+    _checkCauseType(getCause().runtimeType);
   }
 
   Never? _checkCauseType(Type causeType) {

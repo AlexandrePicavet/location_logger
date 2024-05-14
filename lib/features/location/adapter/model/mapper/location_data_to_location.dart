@@ -9,7 +9,7 @@ extension LocationDataToLocation on LocationData {
       this,
       _valid,
       (locationData) => Location(
-        dateTime: DateTime.fromMicrosecondsSinceEpoch(time!.toInt()),
+        dateTime: DateTime.fromMillisecondsSinceEpoch(time!.toInt()),
         latitude: latitude!,
         longitude: longitude!,
         altitude: altitude!,

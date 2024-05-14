@@ -8,7 +8,7 @@ import 'package:location_logger/features/location/application/port/location_pers
 import 'package:location_logger/features/location/application/port/location_retrieval_port.dart';
 import 'package:location_logger/features/location/application/service/location_service.dart';
 import 'package:location_logger/features/location/application/usecase/locations_list_usecase.dart';
-import 'package:location_logger/features/location/application/usecase/register_location_usecase.dart';
+import 'package:location_logger/features/location/application/usecase/register_location_updates_usecase.dart';
 import 'package:location_logger/infrastructure/database_client.dart';
 import 'package:location_logger/infrastructure/location_client.dart';
 
@@ -93,10 +93,12 @@ class LocationFeatureRegistration extends FeatureRegistration {
     ));
   }
 
-  Future<void> registerRegisterCurrentLocationUsecase() {
-    return register<RegisterCurrentLocationUsecase>(
+  Future<void> registerRegisterCurrentLocationUsecase() async {
+    await register<RegisterLocationUpdatesUsecase>(
       serviceLocator<LocationService>(),
     );
+
+    serviceLocator<RegisterLocationUpdatesUsecase>().registerUpdates();
   }
 
   Future<void> registerLocationsListUsecase() {

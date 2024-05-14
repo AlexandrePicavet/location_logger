@@ -1,16 +1,36 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:location/location.dart';
 import 'package:location_logger/infrastructure/model/error/location_initialization_error.dart';
+import 'package:location_logger/infrastructure/model/exception/background_location_exception.dart';
 import 'package:location_logger/infrastructure/model/exception/get_location_exception.dart';
 
 class LocationClient {
+  static const _distanceFilterInMeter = 10.0;
   final Location _location = Location();
 
-  TaskEither<LocationInitializationError, LocationClient> initialize() {
+  TaskEither<LocationInitializationError, LocationClient> initialize({
+    LocationAccuracy accuracy = LocationAccuracy.powerSave,
+  }) {
     return TaskEither.tryCatch(
       () async {
         await _enableService();
         await _requestPermission();
+        await _location.changeSettings(
+          accuracy: accuracy,
+          distanceFilter: _distanceFilterInMeter,
+        );
+
+        try {
+          final backgroundModeEnabled = await _location.enableBackgroundMode();
+          if (!backgroundModeEnabled) {
+            throw BackgroundLocationException(
+              "Failed to enable background mode",
+            );
+          }
+        } catch (e) {
+          // TODO Permissions not available in the background send a notification ?
+          print(e);
+        }
 
         return this;
       },
@@ -23,6 +43,10 @@ class LocationClient {
       () => _location.getLocation(),
       (error, stacktrace) => GetLocationException(error),
     );
+  }
+
+  Stream<LocationData> onLocationChanged() {
+    return _location.onLocationChanged;
   }
 
   Future<void> _enableService() async {

@@ -38,7 +38,7 @@ class LocationDatabaseAdapter
       '''
         SELECT timestamp, latitude, longitude, altitude, speed
         FROM Location
-        ${pagination.toWhereOffsetLimit()}
+        ${pagination.toWhereOrderByOffsetLimit()}
       ''',
       [],
     ).bimap(

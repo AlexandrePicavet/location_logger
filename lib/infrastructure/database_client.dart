@@ -18,8 +18,12 @@ class DatabaseClient {
   }) {
     return TaskEither.tryCatch(
       () async {
-        _database = await openDatabase(name,
-            version: version, onCreate: onCreate, onOpen: onOpen);
+        _database = await openDatabase(
+          name,
+          version: version,
+          onCreate: onCreate,
+          onOpen: onOpen,
+        );
 
         return this;
       },
@@ -37,7 +41,7 @@ class DatabaseClient {
     )
         .filterOrElse(
           (result) => result > 0,
-          (result) => DatabaseInsertException("Failed insertion"),
+          (result) => DatabaseInsertException(result),
         )
         .map<void>((_) => {});
   }
