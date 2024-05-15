@@ -33,7 +33,9 @@ class LocationService
         await locationPersistencePort
             .persist(location)
             .mapLeft(LocationUpdateException.new)
-            .getOrElse((error) => print(error)) // Log instead of throw
+            .getOrElse(
+              (error) => print("location update error\n$error"),
+            ) // TODO handle error
             .run();
 
         await onUpdate?.call(location);

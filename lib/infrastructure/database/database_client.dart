@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:location_logger/infrastructure/model/error/database_initialization_error.dart';
-import 'package:location_logger/infrastructure/model/exception/database_insert_exception.dart';
-import 'package:location_logger/infrastructure/model/exception/database_query_exception.dart';
+import 'package:location_logger/infrastructure/database/model/error/database_initialization_error.dart';
+import 'package:location_logger/infrastructure/database/model/exception/database_insert_exception.dart';
+import 'package:location_logger/infrastructure/database/model/exception/database_query_exception.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseClient {
@@ -15,6 +15,8 @@ class DatabaseClient {
   TaskEither<DatabaseInitializationError, DatabaseClient> initialize({
     OnDatabaseCreateFn? onCreate,
     OnDatabaseOpenFn? onOpen,
+    OnDatabaseVersionChangeFn? onUpgrade,
+    OnDatabaseVersionChangeFn? onDowngrade,
   }) {
     return TaskEither.tryCatch(
       () async {
@@ -23,6 +25,8 @@ class DatabaseClient {
           version: version,
           onCreate: onCreate,
           onOpen: onOpen,
+          onUpgrade: onUpgrade,
+          onDowngrade: onDowngrade,
         );
 
         return this;
@@ -38,12 +42,7 @@ class DatabaseClient {
     return TaskEither.tryCatch(
       () => _database.rawInsert(query, arguments),
       (error, stackTrace) => DatabaseInsertException(error),
-    )
-        .filterOrElse(
-          (result) => result > 0,
-          (result) => DatabaseInsertException(result),
-        )
-        .map<void>((_) => {});
+    ).map<void>((_) => {});
   }
 
   TaskEither<DatabaseQueryException, List<Map<String, Object?>>> query<T>(

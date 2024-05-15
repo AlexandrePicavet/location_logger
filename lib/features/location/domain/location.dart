@@ -9,7 +9,7 @@ class Location {
   final double longitude;
 
   /// In meters above the WGS 84 reference ellipsoid. Derived from GPS information.
-  final double altitude;
+  final double? altitude;
 
   /// In meters/second
   ///

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:location_logger/common/model/error/feature_registration_error.dart';
 import 'package:location_logger/common/model/feature_registration.dart';
 import 'package:location_logger/common/model/service_locator.dart';
@@ -9,8 +10,8 @@ import 'package:location_logger/features/location/application/port/location_retr
 import 'package:location_logger/features/location/application/service/location_service.dart';
 import 'package:location_logger/features/location/application/usecase/locations_list_usecase.dart';
 import 'package:location_logger/features/location/application/usecase/register_location_updates_usecase.dart';
-import 'package:location_logger/infrastructure/database_client.dart';
-import 'package:location_logger/infrastructure/location_client.dart';
+import 'package:location_logger/infrastructure/database/database_client.dart';
+import 'package:location_logger/infrastructure/android/location_client.dart';
 
 class LocationFeatureRegistration extends FeatureRegistration {
   @override
@@ -28,14 +29,14 @@ class LocationFeatureRegistration extends FeatureRegistration {
       ];
 
   Future<void> registerDatabaseClient() {
-    final client = DatabaseClient(name: "location", version: 1)
+    final client = DatabaseClient(name: "location", version: 30)
         .initialize(
           onOpen: (db) => db.execute('''
             CREATE TABLE IF NOT EXISTS Location (
               timestamp INTEGER NOT NULL PRIMARY KEY,
               latitude TEXT NOT NULL,
               longitude TEXT NOT NULL,
-              altitude TEXT NOT NULL,
+              altitude TEXT,
               speed TEXT
             ) WITHOUT ROWID
           '''),

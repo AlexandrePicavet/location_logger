@@ -12,8 +12,8 @@ extension LocationDataToLocation on LocationData {
         dateTime: DateTime.fromMillisecondsSinceEpoch(time!.toInt()),
         latitude: latitude!,
         longitude: longitude!,
-        altitude: altitude!,
-        speed: speed,
+        altitude: (altitude ?? 0) > 0.1 ? altitude : null,
+        speed: (speed ?? 0) > 0.1 ? speed : null,
       ),
     );
   }
@@ -21,7 +21,6 @@ extension LocationDataToLocation on LocationData {
   bool _valid(LocationData locationData) {
     return time != null &&
         latitude != null &&
-        longitude != null &&
-        altitude != null;
+        longitude != null;
   }
 }

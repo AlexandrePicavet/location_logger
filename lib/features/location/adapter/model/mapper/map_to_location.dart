@@ -6,7 +6,9 @@ extension MapToLocation on Map<String, Object?> {
         dateTime: DateTime.fromMillisecondsSinceEpoch(this["timestamp"] as int),
         latitude: double.parse(this["latitude"] as String),
         longitude: double.parse(this["longitude"] as String),
-        altitude: double.parse(this["altitude"] as String),
+        altitude: Option.fromNullable(this["altitude"] as String?)
+            .map(double.parse)
+            .toNullable(),
         speed: Option.fromNullable(this["speed"] as String?)
             .map(double.parse)
             .toNullable(),

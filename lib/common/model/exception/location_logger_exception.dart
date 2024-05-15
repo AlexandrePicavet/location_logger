@@ -28,4 +28,16 @@ abstract class LocationLoggerException implements Exception {
       _ => causes.add(_cause)
     };
   }
+
+  @override
+  String toString() {
+    return getCauses()
+        .map(
+          (exception) => switch (exception) {
+            LocationLoggerException() => "[${exception.runtimeType}]",
+            _ => exception.toString()
+          },
+        )
+        .join("\n");
+  }
 }

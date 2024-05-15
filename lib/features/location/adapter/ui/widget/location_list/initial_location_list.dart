@@ -14,7 +14,11 @@ class InitialLocationList extends StateWidget<LocationCubit, LocationInitial> {
   @override
   Widget build(BuildContext context) {
     cubit.listLocations(
-      DateTimePagination.after(start: DateTime.fromMillisecondsSinceEpoch(0)),
+      DateTimePagination.after(
+        start: DateTime.now().subtract(
+          const Duration(days: 1),
+        ),
+      ),
     );
 
     return const CircularLoader(

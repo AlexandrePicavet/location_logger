@@ -6,7 +6,7 @@ import 'package:location_logger/features/location/adapter/model/mapper/location_
 import 'package:location_logger/features/location/application/port/location_gathering_port.dart';
 import 'package:location_logger/features/location/application/port/model/exception/location_gathering_exception.dart';
 import 'package:location_logger/features/location/domain/location.dart';
-import 'package:location_logger/infrastructure/location_client.dart';
+import 'package:location_logger/infrastructure/android/location_client.dart';
 
 class LocationGatheringAdapter implements LocationGatheringPort {
   final LocationClient _locationClient;

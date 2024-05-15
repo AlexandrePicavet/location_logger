@@ -43,6 +43,6 @@ extension DateTimePaginationToSQL on DateTimePagination {
   String toOrderBy({
     String timestampColumnName = defaultTimestampColumnName,
   }) {
-    return "ORDER BY $timestampColumnName ${direction.name.toUpperCase()}";
+    return "ORDER BY $timestampColumnName ${direction.toString()}";
   }
 }

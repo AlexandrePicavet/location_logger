@@ -1,8 +1,8 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:location/location.dart';
-import 'package:location_logger/infrastructure/model/error/location_initialization_error.dart';
-import 'package:location_logger/infrastructure/model/exception/background_location_exception.dart';
-import 'package:location_logger/infrastructure/model/exception/get_location_exception.dart';
+import 'package:location_logger/infrastructure/android/model/error/location_initialization_error.dart';
+import 'package:location_logger/infrastructure/android/model/exception/background_location_exception.dart';
+import 'package:location_logger/infrastructure/android/model/exception/get_location_exception.dart';
 
 class LocationClient {
   static const _distanceFilterInMeter = 10.0;
@@ -19,18 +19,7 @@ class LocationClient {
           accuracy: accuracy,
           distanceFilter: _distanceFilterInMeter,
         );
-
-        try {
-          final backgroundModeEnabled = await _location.enableBackgroundMode();
-          if (!backgroundModeEnabled) {
-            throw BackgroundLocationException(
-              "Failed to enable background mode",
-            );
-          }
-        } catch (e) {
-          // TODO Permissions not available in the background send a notification ?
-          print(e);
-        }
+        await _enableBackgroundMode();
 
         return this;
       },
@@ -58,6 +47,20 @@ class LocationClient {
   Future<void> _requestPermission() async {
     while (!(await _hasPermission())) {
       await _location.requestPermission();
+    }
+  }
+
+  Future<void> _enableBackgroundMode() async {
+    try {
+      final backgroundModeEnabled = await _location.enableBackgroundMode();
+      if (!backgroundModeEnabled) {
+        throw BackgroundLocationException(
+          "Failed to enable background mode",
+        );
+      }
+    } catch (e) {
+      // TODO Permissions not available in the background send a notification ?
+      print("enableBackgroundMode: ${e.toString()}");
     }
   }
 

@@ -1,64 +1,64 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:location_logger/features/location/domain/direction.dart';
+import 'package:location_logger/features/location/domain/location_date_time_interval.dart';
 
-class DateTimePagination {
+class DateTimePagination extends LocationDateTimeInterval {
   static const defaultLimit = 100;
   static const defaultDirection = Direction.desc;
 
-  final DateTime? start;
-  final DateTime? end;
   final int offset;
   // A null limit will return all items
   final int? limit;
   final Direction direction;
 
   DateTimePagination.between({
-    required this.start,
-    required this.end,
+    required super.start,
+    required super.end,
     this.offset = 0,
     this.limit = defaultLimit,
     this.direction = defaultDirection,
-  }) {
+  }) : super.between() {
     _checkIntegrity();
   }
 
   DateTimePagination.before({
-    required this.end,
+    required super.end,
     this.offset = 0,
     this.limit = defaultLimit,
     this.direction = defaultDirection,
-  }) : start = null {
+  }) : super.before() {
     _checkIntegrity();
   }
 
   DateTimePagination.after({
-    required this.start,
+    required super.start,
     this.offset = 0,
     this.limit = defaultLimit,
     this.direction = defaultDirection,
-  }) : end = null {
+  }) : super.after() {
+    _checkIntegrity();
+  }
+
+  DateTimePagination.from({
+    required LocationDateTimeInterval interval,
+    this.offset = 0,
+    this.limit = defaultLimit,
+    this.direction = defaultDirection,
+  }) : super.between(start: interval.start, end: interval.end) {
     _checkIntegrity();
   }
 
   DateTimePagination._({
-    required this.start,
-    required this.end,
+    required super.start,
+    required super.end,
     required this.offset,
     required this.limit,
     required this.direction,
-  }) {
+  }) : super.between() {
     _checkIntegrity();
   }
 
   Never? _checkIntegrity() {
-    if (start == null && end == null) {
-      throw ArgumentError("Either start or end must not be null");
-    } else if (start != null && end != null && start!.second > end!.second) {
-      throw ArgumentError(
-        "End ($end) must be greater or equal to start ($start)",
-      );
-    }
-
     if (offset < 0) {
       throw ArgumentError.value(
         offset,

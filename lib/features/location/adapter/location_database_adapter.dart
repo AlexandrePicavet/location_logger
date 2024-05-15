@@ -1,5 +1,5 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:location_logger/features/location/adapter/model/mapper/date_time_pagination_to_SQL.dart';
+import 'package:location_logger/features/location/adapter/model/mapper/date_time_pagination_to_sql.dart';
 import 'package:location_logger/features/location/adapter/model/mapper/map_to_location.dart';
 import 'package:location_logger/features/location/application/port/location_persistence_port.dart';
 import 'package:location_logger/features/location/application/port/location_retrieval_port.dart';
@@ -8,7 +8,7 @@ import 'package:location_logger/features/location/application/port/model/excepti
 import 'package:location_logger/features/location/domain/date_time_paginated_list.dart';
 import 'package:location_logger/features/location/domain/date_time_pagination.dart';
 import 'package:location_logger/features/location/domain/location.dart';
-import 'package:location_logger/infrastructure/database_client.dart';
+import 'package:location_logger/infrastructure/database/database_client.dart';
 
 class LocationDatabaseAdapter
     implements LocationPersistencePort, LocationRetrievalPort {
