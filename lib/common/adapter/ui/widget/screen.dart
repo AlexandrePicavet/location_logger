@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:location_logger/common/widget/exception_handler/ExceptionHandler.dart';
+import 'package:location_logger/common/adapter/ui/widget/exception_handler/exception_handler.dart';
 
 class Screen extends StatelessWidget {
   final Widget child;

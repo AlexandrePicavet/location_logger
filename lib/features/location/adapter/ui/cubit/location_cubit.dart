@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:location_logger/common/adapter/ui/cubit/cubit_state.dart';
+import 'package:location_logger/common/adapter/ui/cubit/error_state.dart';
 import 'package:location_logger/common/model/service_locator.dart';
 import 'package:location_logger/features/location/application/port/location_retrieval_port.dart';
 import 'package:location_logger/features/location/application/port/model/exception/location_retrieval_exception.dart';

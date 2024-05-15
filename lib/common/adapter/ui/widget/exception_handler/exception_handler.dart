@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:location_logger/common/model/exception/BadRouteArgumentsException.dart';
-import 'package:location_logger/common/widget/exception_handler/BadRouteArgumentsHandler.dart';
+import 'package:location_logger/common/adapter/ui/widget/exception_handler/bad_route_arguments_handler.dart';
 
 class ExceptionHandler extends StatelessWidget {
   final Exception exception;
@@ -11,10 +11,13 @@ class ExceptionHandler extends StatelessWidget {
   Widget build(BuildContext context) {
     return exception is BadRouteArgumentsException
         ? BadRouteArgumentsHandler(
-            exception: exception as BadRouteArgumentsException)
-        : Column(children: [
-            const Text('Unhandled exception thrown'),
-            Text(exception.toString())
-          ]);
+            exception: exception as BadRouteArgumentsException,
+          )
+        : Column(
+            children: [
+              const Text('Unhandled exception thrown'),
+              Text(exception.toString())
+            ],
+          );
   }
 }

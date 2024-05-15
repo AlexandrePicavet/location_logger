@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:location_logger/common/model/exception/BadRouteArgumentsException.dart';
-import 'package:location_logger/common/widget/screen.dart';
+import 'package:location_logger/common/adapter/ui/widget/screen.dart';
 
 class BadRouteArgumentsHandler extends StatelessWidget {
   final BadRouteArgumentsException exception;

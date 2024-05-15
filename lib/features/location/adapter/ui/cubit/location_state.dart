@@ -1,10 +1,7 @@
 part of 'location_cubit.dart';
 
-abstract class LocationState extends Equatable {
+abstract class LocationState extends CubitState {
   const LocationState();
-
-  @override
-  List<Object> get props => [];
 }
 
 class LocationInitial extends LocationState {
@@ -15,13 +12,14 @@ class LocationLoading extends LocationState {
   const LocationLoading();
 }
 
-class LocationListError extends LocationState {
+class LocationListError extends LocationState implements CubitErrorState {
+  @override
   final LocationRetrievalException error;
 
   const LocationListError(this.error);
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [...super.props, error];
 }
 
 class LocationLoaded extends LocationState {
@@ -30,5 +28,5 @@ class LocationLoaded extends LocationState {
   const LocationLoaded(this.locations);
 
   @override
-  List<Object> get props => [locations];
+  List<Object> get props => [...super.props, locations];
 }
