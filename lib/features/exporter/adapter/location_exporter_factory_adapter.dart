@@ -13,8 +13,9 @@ class LocationExporterFactoryAdapter implements LocationExporterFactoryPort {
     ExportTarget exportTarget,
   ) =>
       switch (exportTarget) {
-        ExportTarget.exifTool =>
-          serviceLocator.getOrRegister(initializer: _exifToolInitializer),
+        ExportTarget.exifTool => serviceLocator
+            .getOrRegister(initializer: _exifToolInitializer)
+            .mapLeft(LocationExporterSelectionException.new),
       };
 
   TaskEither<LocationExporterSelectionException,

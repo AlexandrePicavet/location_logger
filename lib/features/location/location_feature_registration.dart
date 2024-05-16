@@ -16,19 +16,19 @@ import 'package:location_logger/infrastructure/android/location_client.dart';
 class LocationFeatureRegistration extends FeatureRegistration {
   @override
   List<Future<void> Function()> get registrations => [
-        registerDatabaseClient,
-        registerLocationClient,
-        registerLocationDatabaseAdapter,
-        registerLocationGatheringAdapter,
-        registerLocationPersistencePort,
-        registerLocationRetrievalPort,
-        registerLocationGatheringPort,
-        registerLocationService,
-        registerRegisterCurrentLocationUsecase,
-        registerLocationsListUsecase
+        _registerDatabaseClient,
+        _registerLocationClient,
+        _registerLocationDatabaseAdapter,
+        _registerLocationGatheringAdapter,
+        _registerLocationPersistencePort,
+        _registerLocationRetrievalPort,
+        _registerLocationGatheringPort,
+        _registerLocationService,
+        _registerRegisterCurrentLocationUsecase,
+        _registerLocationsListUsecase
       ];
 
-  Future<void> registerDatabaseClient() {
+  Future<void> _registerDatabaseClient() {
     final client = DatabaseClient(name: "location", version: 30)
         .initialize(
           onOpen: (db) => db.execute('''
@@ -49,44 +49,44 @@ class LocationFeatureRegistration extends FeatureRegistration {
     );
   }
 
-  Future<void> registerLocationClient() {
+  Future<void> _registerLocationClient() {
     final client =
         LocationClient().initialize().mapLeft(FeatureRegistrationError.new);
 
     return registerTask<LocationClient>(client);
   }
 
-  Future<void> registerLocationDatabaseAdapter() {
+  Future<void> _registerLocationDatabaseAdapter() {
     return register(LocationDatabaseAdapter(
       serviceLocator<DatabaseClient>(instanceName: "locationDatabase"),
     ));
   }
 
-  Future<void> registerLocationGatheringAdapter() {
+  Future<void> _registerLocationGatheringAdapter() {
     return register<LocationGatheringAdapter>(
       LocationGatheringAdapter(serviceLocator()),
     );
   }
 
-  Future<void> registerLocationPersistencePort() {
+  Future<void> _registerLocationPersistencePort() {
     return register<LocationPersistencePort>(
       serviceLocator<LocationDatabaseAdapter>(),
     );
   }
 
-  Future<void> registerLocationRetrievalPort() {
+  Future<void> _registerLocationRetrievalPort() {
     return register<LocationRetrievalPort>(
       serviceLocator<LocationDatabaseAdapter>(),
     );
   }
 
-  Future<void> registerLocationGatheringPort() {
+  Future<void> _registerLocationGatheringPort() {
     return register<LocationGatheringPort>(
       serviceLocator<LocationGatheringAdapter>(),
     );
   }
 
-  Future<void> registerLocationService() {
+  Future<void> _registerLocationService() {
     return register<LocationService>(LocationService(
       locationGatheringPort: serviceLocator(),
       locationPersistencePort: serviceLocator(),
@@ -94,7 +94,7 @@ class LocationFeatureRegistration extends FeatureRegistration {
     ));
   }
 
-  Future<void> registerRegisterCurrentLocationUsecase() async {
+  Future<void> _registerRegisterCurrentLocationUsecase() async {
     await register<RegisterLocationUpdatesUsecase>(
       serviceLocator<LocationService>(),
     );
@@ -102,7 +102,7 @@ class LocationFeatureRegistration extends FeatureRegistration {
     serviceLocator<RegisterLocationUpdatesUsecase>().registerUpdates();
   }
 
-  Future<void> registerLocationsListUsecase() {
+  Future<void> _registerLocationsListUsecase() {
     return register<LocationsListUsecase>(
       serviceLocator<LocationService>(),
     );

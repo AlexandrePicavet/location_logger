@@ -1,6 +1,6 @@
 part of 'location_cubit.dart';
 
-abstract class LocationState extends CubitState {
+sealed class LocationState extends CubitState {
   const LocationState();
 }
 

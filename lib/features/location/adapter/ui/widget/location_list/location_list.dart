@@ -29,9 +29,6 @@ class LocationList extends StatelessWidget {
             cubit: context.read<LocationCubit>(),
             state: state,
           ),
-        _ => throw Exception(
-            "Visual not implemented for LocationState: '${state.runtimeType}'",
-          ),
       },
     );
   }

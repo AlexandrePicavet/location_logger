@@ -23,6 +23,4 @@ class LocationDateTimeInterval {
       );
     }
   }
-
-  // TODO Add toString: (from xxx to xxx)
 }
