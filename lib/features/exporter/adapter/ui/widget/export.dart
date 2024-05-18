@@ -24,6 +24,9 @@ class Export extends StatelessWidget {
                         ),
                       )
                       .toList(),
+                  initialSelection: state is ExportedState
+                      ? state.configuration.exportTarget
+                      : null,
                   onSelected: (target) => _onExportTargetSelect(
                     context.read<ExportCubit>(),
                     target,

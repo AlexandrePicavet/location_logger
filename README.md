@@ -6,5 +6,5 @@
   - [x] Display locations
   - [ ] List more locations
   - [ ] Load new locations (Refresh)
-- [ ] Export locations
-  - [ ] Exiftool Geotag
+- [x] Export locations
+  - [x] Exiftool Geotag

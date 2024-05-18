@@ -4,7 +4,11 @@
 			"path": "."
 		}
 	],
-	"settings": {},
+	"settings": {
+		"cSpell.words": [
+			"Exif"
+		]
+	},
 	"extensions": {
 		"recommendations": [
 			"Dart-Code.flutter",

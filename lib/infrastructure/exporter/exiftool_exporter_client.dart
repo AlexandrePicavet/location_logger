@@ -1,39 +1,39 @@
 import 'dart:io';
 
 import 'package:csv/csv.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:location_logger/features/location/domain/location.dart';
 import 'package:location_logger/features/location/domain/location_date_time_interval.dart';
 import 'package:location_logger/infrastructure/exporter/model/exception/exiftool_exporter_export_exception.dart';
 import 'package:location_logger/infrastructure/exporter/model/exception/exiftool_exporter_initialization_exception.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:location_logger/infrastructure/exporter/model/exif_date_time.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
+// https://exiftool.org/geotag.html
 class ExiftoolExporterClient {
   static const gpsTags = [
-    "GPSTimeStamp",
+    "GPSDateTime",
     "GPSLatitude",
     "GPSLongitude",
     "GPSAltitude",
     "GPSSpeed",
   ];
-
   static const refTags = [
     "GPSLatitudeRef",
     "GPSLongitudeRef",
     "GPSAltitudeRef",
     "GSPSpeedRef",
   ];
+  static const headers = [...gpsTags, ...refTags];
 
   static const refs = ["N", "W", "0", "K"];
-
-  static const headers = [...gpsTags, ...refTags];
 
   TaskEither<ExiftoolExporterInitializationException, ExiftoolExporterClient>
       initialize() {
     return TaskEither.tryCatch(
       () async {
-        await _requestStoragePermission();
+        //await _requestStoragePermission();
 
         return this;
       },
@@ -45,61 +45,33 @@ class ExiftoolExporterClient {
     List<Location> locations,
     LocationDateTimeInterval interval,
   ) {
-    return getExportPath(interval).flatMap(
-      (filename) => _map(locations).toTaskEither().flatMap(
-            (data) => _save(data, filename),
-          ),
-    );
-  }
-
-  Future<void> _requestStoragePermission() async {
-    if (await Permission.storage.isGranted) {
-      return;
-    }
-
-    final permission = Permission.storage.onPermanentlyDeniedCallback(
-      () => throw ExiftoolExporterInitializationException(
-        ExiftoolExporterInitializationExceptionCause
-            .permissionPermanentlyDenied,
-      ),
-    );
-
-    while (!(await permission.request().isGranted)) {}
-  }
-
-  TaskEither<ExiftoolExporterExportException, String> getExportPath(
-    LocationDateTimeInterval interval,
-  ) {
-    return TaskEither.tryCatch(
-      () async => Option.fromNullable(
-        await FilePicker.platform.saveFile(
-          allowedExtensions: ["csv"],
-          fileName: 'location-export-${interval.toString()}',
-        ),
-      ).getOrElse(() => throw "Export cancelled"),
-      (error, stackTrace) => ExiftoolExporterExportException(error),
-    );
+    return _map(locations)
+        .toTaskEither()
+        .flatMap(
+          (data) => _save(data, "location-export--${interval.toString()}.csv"),
+        )
+        .flatMap(_export);
   }
 
   Either<ExiftoolExporterExportException, String> _map(
     List<Location> locations,
   ) {
-    final data = locations.map(_mapLocation);
-
     return Either.tryCatch(
-      () => const ListToCsvConverter().convert([headers, ...data]),
+      () => const ListToCsvConverter().convert([
+        headers,
+        ...locations.map(_mapLocationToCsvData),
+      ]),
       (error, stackTrace) => ExiftoolExporterExportException(error),
     );
   }
 
-  List<dynamic> _mapLocation(Location location) {
-    final timestamp = location.dateTime.toString(); // change
+  List<dynamic> _mapLocationToCsvData(Location location) {
     final speedInKMph = Option.fromNullable(location.speed)
         .map((speed) => (speed * 3.6))
         .toNullable();
 
     return [
-      timestamp,
+      location.dateTime.toExif(),
       location.latitude,
       location.longitude,
       location.altitude,
@@ -108,18 +80,38 @@ class ExiftoolExporterClient {
     ];
   }
 
-  TaskEither<ExiftoolExporterExportException, void> _save(
+  TaskEither<ExiftoolExporterExportException, File> _save(
     String csvData,
     String filename,
   ) {
     return TaskEither.tryCatch(
       () async {
-        final output = File(filename).openWrite();
+        var file = File("${(await getTemporaryDirectory()).path}/$filename");
+        if (!(await file.exists())) {
+          file = await file.create();
+        }
 
-        output.write(csvData);
-
+        final output = file.openWrite()..write(csvData);
         await output.flush();
         await output.close();
+
+        return file;
+      },
+      (error, stackTrace) => ExiftoolExporterExportException(error),
+    );
+  }
+
+  TaskEither<ExiftoolExporterExportException, void> _export(File file) {
+    return TaskEither.tryCatch(
+      () async {
+        final result = await Share.shareXFiles(
+          [XFile(file.path, mimeType: "text/csv")],
+          text: "Exiftool GeoTag Locations",
+        );
+
+        if (result.status != ShareResultStatus.success) {
+          throw ExiftoolExporterExportException(result);
+        }
       },
       (error, stackTrace) => ExiftoolExporterExportException(error),
     );

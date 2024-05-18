@@ -5,5 +5,6 @@ class ExiftoolExporterInitializationException extends LocationLoggerException {
 }
 
 enum ExiftoolExporterInitializationExceptionCause {
-  permissionPermanentlyDenied
+  permissionPermanentlyDenied,
+  permissionNotGranted,
 }

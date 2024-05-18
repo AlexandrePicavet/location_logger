@@ -7,7 +7,13 @@ class LocationLogger extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [
+        SystemUiOverlay.top,
+        SystemUiOverlay.bottom,
+      ],
+    );
 
     return MaterialApp.router(
       title: 'Location Logger',

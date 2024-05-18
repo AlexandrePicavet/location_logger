@@ -17,7 +17,7 @@ tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
 
-// FIXME needed for the location plugin
+// needed for the location plugin
 buildscript {
 	ext.kotlin_version = '1.9.0'
 	repositories {
