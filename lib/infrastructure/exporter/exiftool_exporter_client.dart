@@ -27,7 +27,7 @@ class ExiftoolExporterClient {
   ];
   static const headers = [...gpsTags, ...refTags];
 
-  static const refs = ["N", "W", "0", "K"];
+  static const refs = ["N", "E", "0", "K"];
 
   TaskEither<ExiftoolExporterInitializationException, ExiftoolExporterClient>
       initialize() {
