@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:location_logger/infrastructure/database/model/error/database_initialization_error.dart';
 import 'package:location_logger/infrastructure/database/model/exception/database_insert_exception.dart';
+import 'package:location_logger/infrastructure/database/model/exception/database_path_exception.dart';
 import 'package:location_logger/infrastructure/database/model/exception/database_query_exception.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -52,6 +53,13 @@ class DatabaseClient {
     return TaskEither.tryCatch(
       () => _database.rawQuery(query, arguments),
       (error, stackTrace) => DatabaseQueryException(error),
+    );
+  }
+
+  TaskEither<DatabasePathException, String> getPath() {
+    return TaskEither.tryCatch(
+      () async => _database.path,
+      (error, stackTrace) => DatabasePathException(error),
     );
   }
 }

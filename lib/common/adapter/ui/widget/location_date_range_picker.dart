@@ -39,19 +39,19 @@ class LocationDateRangePicker extends StatelessWidget {
 
   Future<void> _dateRangeSelected(BuildContext context) async {
     return onSelect(
-        Option.fromNullable(
-          await showDateRangePicker(
-            context: context,
-            initialDateRange: DateTimeRange(start: start, end: end),
-            firstDate: DateTime.fromMillisecondsSinceEpoch(0),
-            lastDate: end,
+      Option.fromNullable(
+        await showDateRangePicker(
+          context: context,
+          initialDateRange: DateTimeRange(start: start, end: end),
+          firstDate: DateTime.fromMillisecondsSinceEpoch(0),
+          lastDate: end,
+        ),
+      ).map(
+        (range) => DateTimeRange(
+          start: range.start,
+          end: range.end.add(
+            const Duration(hours: 23, minutes: 59, seconds: 59),
           ),
-        ).map(
-          (range) => DateTimeRange(
-            start: range.start,
-            end: end.add(
-              const Duration(hours: 23, minutes: 59, seconds: 59),
-            ),
         ),
       ),
     );

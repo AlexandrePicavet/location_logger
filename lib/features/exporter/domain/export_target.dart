@@ -1,5 +1,6 @@
 enum ExportTarget {
-  exifTool("ExifTool Geotag");
+  exifTool("ExifTool Geotag"),
+  database("SQLite Database export");
 
   final String label;
 

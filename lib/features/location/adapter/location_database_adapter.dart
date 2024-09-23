@@ -34,19 +34,30 @@ class LocationDatabaseAdapter
   TaskEither<LocationRetrievalException, DateTimePaginatedList<Location>> list(
     DateTimePagination pagination,
   ) {
-    return databaseClient.query(
-      '''
+    return databaseClient
+        .query(
+          '''
         SELECT timestamp, latitude, longitude, altitude, speed
         FROM Location
         ${pagination.toWhereOrderByOffsetLimit()}
       ''',
-      [],
-    ).bimap(
-      LocationRetrievalException.new,
-      (results) => DateTimePaginatedList(
-        list: results.map((resultItem) => resultItem.toLocation()).toList(),
-        pagination: pagination,
-      ),
-    );
+          [],
+        )
+        .map((results) => results.map((resultItem) => resultItem.toLocation()))
+        .map((locations) => locations.partitionEithersEither())
+        .map((partitionedLocations) {
+          final (failures, success) = partitionedLocations;
+          // TODO log failures
+          return success;
+        })
+        .bimap(
+          LocationRetrievalException.new,
+          (locations) {
+            return DateTimePaginatedList(
+              list: locations,
+              pagination: pagination,
+            );
+          },
+        );
   }
 }

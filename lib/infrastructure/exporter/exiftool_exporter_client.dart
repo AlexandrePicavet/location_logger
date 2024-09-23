@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:csv/csv.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:location_logger/features/exporter/domain/export_target.dart';
 import 'package:location_logger/features/location/domain/location.dart';
 import 'package:location_logger/features/location/domain/location_date_time_interval.dart';
 import 'package:location_logger/infrastructure/exporter/model/exception/exiftool_exporter_export_exception.dart';
@@ -12,6 +13,8 @@ import 'package:share_plus/share_plus.dart';
 
 // https://exiftool.org/geotag.html
 class ExiftoolExporterClient {
+  static const target = ExportTarget.exifTool;
+
   static const gpsTags = [
     "GPSDateTime",
     "GPSLatitude",
@@ -106,7 +109,7 @@ class ExiftoolExporterClient {
       () async {
         final result = await Share.shareXFiles(
           [XFile(file.path, mimeType: "text/csv")],
-          text: "Exiftool GeoTag Locations",
+          text: target.label,
         );
 
         if (result.status != ShareResultStatus.success) {

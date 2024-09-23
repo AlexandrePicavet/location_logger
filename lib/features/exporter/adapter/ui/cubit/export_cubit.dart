@@ -81,8 +81,11 @@ class ExportCubit extends Cubit<ExportState> {
 
     emit(newState);
 
-    // TODO Fix export stuck
-    return (await usecase.export(newState.configuration).run()).fold(
+    // TODO Fix export stuck (Not really stuck, often the handling in the widget is not working)
+    final future = usecase.export(newState.configuration);
+    final result = await future.run();
+
+    return result.fold(
       (error) => emit(ExportingErrorState(error)),
       (_) => emit(ExportedState(newState.configuration)),
     );
