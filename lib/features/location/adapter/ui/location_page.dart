@@ -17,15 +17,22 @@ class LocationPage extends StatelessWidget {
         child: Column(
           children: [
             const Expanded(child: LocationList()),
-            ElevatedButton(
-              onPressed: () => context.goNamed(Routes.export.name),
-              child: const Text("Export"),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () => context.pushNamed(Routes.export.name),
+                  child: const Text("Export"),
+                ),
+                ElevatedButton(
+                  onPressed: () => context.pushNamed(Routes.import.name),
+                  child: const Text("Import"),
+                )
+              ],
             )
           ],
         ),
       ),
     );
   }
-
-  void goToExport() {}
 }
